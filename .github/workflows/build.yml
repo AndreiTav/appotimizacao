@@ -42,7 +42,9 @@ jobs:
             '```text' | Add-Content $env:GITHUB_STEP_SUMMARY
             Get-Content artifacts/windows-build.log -Tail 70 | Add-Content $env:GITHUB_STEP_SUMMARY
             '```' | Add-Content $env:GITHUB_STEP_SUMMARY
-            Write-Host "::error::A verificação Windows falhou. Consulte o resumo e windows-build.log."
+            $excerpt = (Get-Content artifacts/windows-build.log -Tail 40) -join "`n"
+            $annotation = $excerpt.Replace('%', '%25').Replace("`r", '%0D').Replace("`n", '%0A')
+            Write-Host "::error::$annotation"
             exit 1
           }
       - uses: actions/upload-artifact@v4
