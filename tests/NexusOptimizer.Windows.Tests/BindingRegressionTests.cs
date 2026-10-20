@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Markup;
+using System.Windows.Threading;
 using System.Xml.Linq;
 using NexusOptimizer.Core;
 
@@ -26,14 +27,26 @@ public sealed class BindingRegressionTests
             var snapshot = new DriveSnapshot(@"C:\", 100, 25);
             progress.DataContext = snapshot;
             progress.Measure(new Size(200, 20)); progress.Arrange(new Rect(0, 0, 200, 20));
+            DrainDispatcher();
             var binding = progress.GetBindingExpression(RangeBase.ValueProperty)!;
+            binding.UpdateTarget();
+            Assert.Equal(BindingStatus.Active, binding.Status);
             Assert.Equal(BindingMode.OneWay, binding.ParentBinding.Mode);
             Assert.Equal(75d, progress.Value);
             progress.SetCurrentValue(RangeBase.ValueProperty, 10d);
             binding.UpdateSource();
             Assert.Equal(75d, snapshot.UsedPercent);
-            binding.UpdateTarget(); Assert.Equal(75d, progress.Value);
+            binding.UpdateTarget(); DrainDispatcher(); Assert.Equal(75d, progress.Value);
         });
+    }
+
+    private static void DrainDispatcher()
+    {
+        // A detached control still schedules initial data binding on the dispatcher.
+        // An STA thread alone does not process that queue as a running WPF application does.
+        var frame = new DispatcherFrame();
+        Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.ContextIdle, new Action(() => frame.Continue = false));
+        Dispatcher.PushFrame(frame);
     }
 
     private static void RunSta(Action action)
