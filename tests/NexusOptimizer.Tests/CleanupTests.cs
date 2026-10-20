@@ -86,7 +86,7 @@ public sealed class CleanupTests
         if (!OperatingSystem.IsWindows()) { Directory.CreateSymbolicLink(link, target); return; }
         // Junctions do not require Developer Mode / symbolic-link privileges on Windows.
         var result = await new ProcessRunner().RunAsync(Path.Combine(Environment.SystemDirectory, "cmd.exe"),
-            ["/d", "/c", $"mklink /J \"{link}\" \"{target}\""], TimeSpan.FromSeconds(10));
+            ["/d", "/c", "mklink", "/J", link, target], TimeSpan.FromSeconds(10));
         result.EnsureSuccess();
     }
 }

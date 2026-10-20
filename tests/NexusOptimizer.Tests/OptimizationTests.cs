@@ -93,7 +93,9 @@ public sealed class OptimizationTests
     [Fact] public async Task FailedBackupPreventsSystemWrite()
     {
         using var d = new TestDirectory(); var engine = new OptimizationEngine(new(d.Path, () => []), new(d.File("logs"))); var operation = new Operation();
-        await Assert.ThrowsAnyAsync<IOException>(() => engine.ApplyAsync(operation, "target"));
+        var failure = await Record.ExceptionAsync(() => engine.ApplyAsync(operation, "target"));
+        Assert.True(failure is IOException or UnauthorizedAccessException,
+            $"Expected a filesystem/permission failure, got {failure?.GetType().Name ?? "success"}.");
         Assert.Equal(0, operation.Writes); Assert.Equal("original", operation.State);
     }
     [Fact] public async Task InvalidRequestDoesNotCreateHistory()
