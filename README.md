@@ -1,18 +1,22 @@
 # NEXUS OPTIMIZER
 
-Aplicativo desktop em português para Windows 11 x64. MVP 0.1.0 em C# / .NET 10 LTS, WPF, WPF UI (Fluent) e CommunityToolkit.Mvvm. Sem telemetria, anúncios ou requisições externas na execução normal. Dependências são obtidas somente durante o desenvolvimento.
+Aplicativo desktop em português para Windows 11 x64. MVP 0.1.1 em C# / .NET 10 LTS, WPF, WPF UI (Fluent) e CommunityToolkit.Mvvm. Sem telemetria, anúncios ou requisições externas na execução normal. Dependências são obtidas somente durante o desenvolvimento.
 
 ## Download
 
-- [Baixar aplicativo portátil Windows x64 (ZIP, aproximadamente 69 MB)](https://github.com/AndreiTav/appotimizacao/raw/refs/heads/main/downloads/NEXUS-OPTIMIZER-0.1.0-win-x64.zip)
-- [Baixar somente o código-fonte (ZIP)](https://github.com/AndreiTav/appotimizacao/raw/refs/heads/main/downloads/NEXUS-OPTIMIZER-0.1.0-source.zip)
-- [SHA-256 do pacote portátil](downloads/NEXUS-OPTIMIZER-0.1.0-win-x64.zip.sha256)
+- [Baixar aplicativo portátil Windows x64 (ZIP, aproximadamente 69 MB)](https://github.com/AndreiTav/appotimizacao/raw/refs/heads/main/downloads/NEXUS-OPTIMIZER-0.1.1-win-x64.zip)
+- [Baixar somente o código-fonte (ZIP)](https://github.com/AndreiTav/appotimizacao/raw/refs/heads/main/downloads/NEXUS-OPTIMIZER-0.1.1-source.zip)
+- [SHA-256 do pacote portátil](downloads/NEXUS-OPTIMIZER-0.1.1-win-x64.zip.sha256)
 
 Se o repositório for privado, entre no GitHub com uma conta que tenha acesso antes de baixar. Se o download direto não abrir, acesse a [pasta downloads](downloads) e use o botão de download do arquivo ZIP no GitHub. Extraia o pacote inteiro; o `.exe` isolado não funciona sem suas DLLs.
 
+## Correção da versão 0.1.0
+
+A versão 0.1.1 corrige a falha `UsedPercent` / associação bidirecional e a repetição de caixas de erro na abertura. [Detalhes da correção](docs/CORRECAO-0.1.1.md). Feche a versão antiga antes de abrir a nova; preserve o diretório de histórico e backups.
+
 ## Executar no Windows
 
-1. Extraia **todo** o pacote `NEXUS-OPTIMIZER-0.1.0-win-x64.zip` para uma pasta fixa do usuário.
+1. Extraia **todo** o pacote `NEXUS-OPTIMIZER-0.1.1-win-x64.zip` para uma pasta fixa do usuário.
 2. Abra **NEXUS OPTIMIZER.exe** por duplo clique. Não é necessário instalar .NET, Node, Python ou abrir um terminal.
 3. Use **ANALISAR MEU PC**. Leia cada recomendação e confirme as alterações desejadas.
 
@@ -65,8 +69,8 @@ Saídas:
 
 ```text
 artifacts/win-x64/NEXUS OPTIMIZER.exe
-artifacts/NEXUS-OPTIMIZER-0.1.0-win-x64.zip
-artifacts/NEXUS-OPTIMIZER-0.1.0-win-x64.zip.sha256
+artifacts/NEXUS-OPTIMIZER-0.1.1-win-x64.zip
+artifacts/NEXUS-OPTIMIZER-0.1.1-win-x64.zip.sha256
 artifacts/test-results/*.trx
 ```
 
@@ -83,7 +87,7 @@ dotnet publish src/NexusOptimizer.App -c Release -r win-x64 --self-contained tru
 
 O setup instala o SDK Linux x64 em `/workspace/.dotnet` e verifica SHA-512 antes de extrair. TLS, assinaturas de pacotes e auditoria NuGet não são desabilitados. Os comandos não requerem um novo worktree: tarefas de nuvem já são isoladas; use o checkout existente. Dependendo da sandbox, o .NET precisa de permissão para seus mutexes em `~/.dotnet` e os metadados NuGet em `~/.local/share/NuGet`; não é necessário alterar `HOME`.
 
-Linux permite executar os testes Core e compilar/publicar para Windows. **Não executa WPF, testes nativos Windows nem UAC.** O workflow GitHub Actions fornecido cobre Linux e Windows Server 2025; está preparado, mas sua execução não é presumida. A validação final de Windows 11 segue o [roteiro manual](docs/VALIDACAO-WINDOWS.md).
+Linux permite executar os testes Core e compilar/publicar para Windows. **Não executa WPF, testes nativos Windows nem UAC.** O [workflow GitHub Actions](https://github.com/AndreiTav/appotimizacao/actions/runs/39356258615) concluiu com sucesso a verificação em Linux e Windows Server 2025: 44 testes Core, 6 testes nativos/WPF e o smoke test de abertura das nove páginas. Isso não substitui testes interativos em diferentes computadores Windows 11. A validação final de Windows 11 segue o [roteiro manual](docs/VALIDACAO-WINDOWS.md).
 
 ## Estrutura e segurança
 
