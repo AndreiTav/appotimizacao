@@ -14,7 +14,10 @@ try {
         throw 'O smoke test excedeu 90 segundos.'
     }
     $process.Refresh()
-    if ($process.ExitCode -ne 0) { throw "O aplicativo retornou código $($process.ExitCode). Resultado: $result" }
+    if ($process.ExitCode -ne 0) {
+        if (Test-Path $result) { Write-Host (Get-Content -Raw $result) }
+        throw "O aplicativo retornou código $($process.ExitCode). Resultado: $result"
+    }
     if (-not (Test-Path $result)) { throw 'O aplicativo não produziu o resultado do smoke test.' }
     $data = Get-Content -Raw $result | ConvertFrom-Json
     if (-not $data.Passed -or $data.Pages -ne 9) { throw 'Falha de inicialização ou carregamento dos módulos.' }
