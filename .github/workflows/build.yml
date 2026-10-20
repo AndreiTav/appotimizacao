@@ -29,7 +29,22 @@ jobs:
           global-json-file: global.json
       - name: Compilar, testar e publicar portátil
         shell: pwsh
-        run: ./scripts/build.ps1
+        run: |
+          New-Item -ItemType Directory -Path artifacts -Force | Out-Null
+          try {
+            & ./scripts/build.ps1 *>&1 | Tee-Object -FilePath artifacts/windows-build.log
+            if ($LASTEXITCODE -ne 0) { throw "Build retornou código $LASTEXITCODE" }
+            "## Verificação Windows`n`nBuild, testes nativos e smoke test concluídos." | Add-Content $env:GITHUB_STEP_SUMMARY
+            Get-Content artifacts/test-results/windows-ui-smoke.json | Add-Content $env:GITHUB_STEP_SUMMARY
+          } catch {
+            $_.ToString() | Add-Content artifacts/windows-build.log
+            '## Falha da verificação Windows' | Add-Content $env:GITHUB_STEP_SUMMARY
+            '```text' | Add-Content $env:GITHUB_STEP_SUMMARY
+            Get-Content artifacts/windows-build.log -Tail 70 | Add-Content $env:GITHUB_STEP_SUMMARY
+            '```' | Add-Content $env:GITHUB_STEP_SUMMARY
+            Write-Host "::error::A verificação Windows falhou. Consulte o resumo e windows-build.log."
+            exit 1
+          }
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -38,3 +53,4 @@ jobs:
             artifacts/*.zip
             artifacts/*.sha256
             artifacts/test-results
+            artifacts/windows-build.log

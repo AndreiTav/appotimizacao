@@ -7,7 +7,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>AnyCPU;x64</Platforms>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Product>NEXUS OPTIMIZER</Product>
     <Description>Monitoramento e ajustes reversíveis para Windows 11.</Description>
   </PropertyGroup>

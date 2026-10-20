@@ -24,7 +24,19 @@ public partial class App : Application
         }
         System.Globalization.CultureInfo.DefaultThreadCurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("pt-BR");
         System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("pt-BR");
-        DispatcherUnhandledException += (_, args) => { Log.Write("Falha da interface", args.Exception); args.Handled = true; MessageBox.Show("Não foi possível concluir a ação. " + args.Exception.Message, "NEXUS • erro", MessageBoxButton.OK, MessageBoxImage.Error); };
+        var uiFailures = new UiFailureHandler(
+            error => Log.Write("Falha da interface", error),
+            error =>
+            {
+                if (MainWindow is NexusOptimizer.App.MainWindow window) window.EnterRecoveryMode(error);
+                else Shutdown(1);
+            },
+            () => Shutdown(1));
+        DispatcherUnhandledException += (_, args) =>
+        {
+            args.Handled = true;
+            uiFailures.Report(args.Exception);
+        };
         TaskScheduler.UnobservedTaskException += (_, args) => { Log.Write("Tarefa não observada", args.Exception); args.SetObserved(); };
         AppDomain.CurrentDomain.UnhandledException += (_, args) => Log.Write("Falha fatal", args.ExceptionObject as Exception);
         if (!OperatingSystem.IsWindowsVersionAtLeast(10, 0, 22000) || RuntimeInformation.ProcessArchitecture != Architecture.X64)

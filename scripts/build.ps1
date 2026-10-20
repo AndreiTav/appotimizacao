@@ -16,7 +16,9 @@ try {
     Invoke-Dotnet publish src/NexusOptimizer.App -c Release -r win-x64 --self-contained true --no-restore -p:PublishSingleFile=false -p:PublishTrimmed=false -m:1 -o artifacts/win-x64
     Copy-Item README.md artifacts/win-x64/LEIA-ME.md -Force
     if (-not $SkipSmokeTest) { & "$PSScriptRoot/smoke-test.ps1" }
-    $zip = Join-Path $root 'artifacts/NEXUS-OPTIMIZER-0.1.0-win-x64.zip'
+    $project = [xml](Get-Content -Raw src/NexusOptimizer.App/NexusOptimizer.App.csproj)
+    $version = $project.SelectSingleNode('/Project/PropertyGroup/Version').InnerText
+    $zip = Join-Path $root "artifacts/NEXUS-OPTIMIZER-$version-win-x64.zip"
     if (Test-Path $zip) { Remove-Item $zip }
     Compress-Archive -Path artifacts/win-x64/* -DestinationPath $zip
     (Get-FileHash -Algorithm SHA256 $zip).Hash.ToLowerInvariant() + '  ' + (Split-Path -Leaf $zip) | Set-Content "$zip.sha256" -Encoding ascii
