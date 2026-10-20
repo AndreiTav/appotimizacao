@@ -10,10 +10,10 @@ try {
         if ($LASTEXITCODE -ne 0) { throw "dotnet falhou com código $LASTEXITCODE" }
     }
     Invoke-Dotnet restore NexusOptimizer.sln --locked-mode
-    Invoke-Dotnet build NexusOptimizer.sln -c Release --no-restore -m:1
+    Invoke-Dotnet build NexusOptimizer.sln -c Release --no-restore '-m:1'
     Invoke-Dotnet test tests/NexusOptimizer.Tests -c Release --no-build --no-restore --logger 'trx;LogFileName=core-tests.trx' --results-directory artifacts/test-results
     Invoke-Dotnet test tests/NexusOptimizer.Windows.Tests -c Release --no-build --no-restore --logger 'trx;LogFileName=windows-tests.trx' --results-directory artifacts/test-results
-    Invoke-Dotnet publish src/NexusOptimizer.App -c Release -r win-x64 --self-contained true --no-restore -p:PublishSingleFile=false -p:PublishTrimmed=false -m:1 -o artifacts/win-x64
+    Invoke-Dotnet publish src/NexusOptimizer.App -c Release -r win-x64 --self-contained true --no-restore '-p:PublishSingleFile=false' '-p:PublishTrimmed=false' '-m:1' -o artifacts/win-x64
     Copy-Item README.md artifacts/win-x64/LEIA-ME.md -Force
     if (-not $SkipSmokeTest) { & "$PSScriptRoot/smoke-test.ps1" }
     $project = [xml](Get-Content -Raw src/NexusOptimizer.App/NexusOptimizer.App.csproj)
